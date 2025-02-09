@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2170069227049751811}
   - component: {fileID: 5630508285607718939}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: Cubic
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,4 +176,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   moveSpeed: 0.1
-  useCubic: 0
+  useCubic: 1

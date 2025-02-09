@@ -35,7 +35,7 @@ public class TowerUpgrade : MonoBehaviour
             if (gameManager.gold >= speedUpgradeCost)
             {
                 gameManager.gold -= speedUpgradeCost;
-                turret.cooldown = Mathf.Max(0.5f, turret.cooldown - 0.5f);
+                turret.cooldown = Mathf.Max(0.4f, turret.cooldown - 0.5f);
                 gameManager.UpdateGoldUI();
                 Debug.Log("Speed upgraded! New cooldown: " + turret.cooldown);
             }
