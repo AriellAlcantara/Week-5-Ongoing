@@ -177,3 +177,6 @@ MonoBehaviour:
   target: {fileID: 0}
   moveSpeed: 0.1
   useCubic: 1
+  goldCoinPrefab: {fileID: 620593082508067947, guid: 8cea6e58d141ae749816d77c025a6eb0, type: 3}
+  goldTarget: {fileID: 1966548148711722870, guid: baf718292a7759041a4c68b98c40e7b4, type: 3}
+  goldCoinSpeed: 1

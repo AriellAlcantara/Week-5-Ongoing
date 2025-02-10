@@ -1,5 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI failText;
     public int playerHP = 10;
     public int gold = 0;
+    private int targetGold = 0;
 
     private void Awake()
     {
@@ -27,9 +29,18 @@ public class GameManager : MonoBehaviour
 
     public void AddGold(int amount)
     {
-        gold += amount;
-        UpdateGoldUI();
-        Debug.Log("Gold: " + gold);
+        targetGold += amount;
+        StartCoroutine(IncrementGoldGradually());
+    }
+
+    private IEnumerator IncrementGoldGradually()
+    {
+        while (gold < targetGold)
+        {
+            gold++;
+            UpdateGoldUI();
+            yield return new WaitForSeconds(0.1f); // Adjust speed of increment
+        }
     }
 
     public void UpdateGoldUI()
