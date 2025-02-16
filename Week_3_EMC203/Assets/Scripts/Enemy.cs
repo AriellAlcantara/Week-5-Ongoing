@@ -1,36 +1,47 @@
 using UnityEngine;
+using TMPro;
 
 public class Enemy : MonoBehaviour
 {
     public Transform target;
     public float moveSpeed = 2f;
-    public bool useCubic = false;
+    public bool useBezierCurve = true; // Use Bezier curve movement
 
     public GameObject goldCoinPrefab; // Assign in Inspector
     public Transform goldTarget;      // Assign in Inspector
-    public float goldCoinSpeed = 7f;  // Adjustable speed for coin movement
+    public float goldCoinSpeed = 7f;  // Speed for coin movement
 
     private float t = 0f;
     private Vector3 startPos;
+    private Vector3 controlPoint; // Used for Bezier curve
 
-    // Track active enemies
+    // Wave and spawning variables
+    public static int currentWave = 1;
     public static int enemiesLeft = 0;
+    public static int enemiesToSpawn = 10;
+
+    private static Spawner spawner; // Reference to the spawner
+    private static TextMeshProUGUI enemiesLeftText; // UI Text for enemies left
 
     void Start()
     {
         target = GameObject.Find("TargetPoint")?.transform;
         goldTarget = GameObject.Find("GoldTarget")?.transform;
+        spawner = GameObject.FindFirstObjectByType<Spawner>();
+        enemiesLeftText = GameObject.FindFirstObjectByType<TextMeshProUGUI>();
 
         if (target == null)
-        {
             Debug.LogError("TargetPoint GameObject not found!");
-        }
         if (goldTarget == null)
-        {
             Debug.LogError("GoldTarget GameObject not found!");
-        }
+        if (spawner == null)
+            Debug.LogError("Spawner GameObject not found!");
 
         startPos = transform.position;
+        controlPoint = (startPos + target.position) / 2 + new Vector3(2, 2, 0); // Adjusted curve height
+        enemiesLeft++;
+
+        UpdateEnemiesLeftUI();
     }
 
     void Update()
@@ -38,7 +49,7 @@ public class Enemy : MonoBehaviour
         if (target == null) return;
 
         t += Time.deltaTime * moveSpeed;
-        transform.position = useCubic ? CubicLerp(startPos, target.position, t) : QuadraticLerp(startPos, target.position, t);
+        transform.position = useBezierCurve ? BezierCurve(startPos, controlPoint, target.position, t) : QuadraticLerp(startPos, target.position, t);
 
         if (t >= 1f)
         {
@@ -52,9 +63,11 @@ public class Enemy : MonoBehaviour
         return Vector3.Lerp(start, end, t * t);
     }
 
-    Vector3 CubicLerp(Vector3 start, Vector3 end, float t)
+    Vector3 BezierCurve(Vector3 start, Vector3 control, Vector3 end, float t)
     {
-        return Vector3.Lerp(start, end, t * t * t);
+        Vector3 p0 = Vector3.Lerp(start, control, t);
+        Vector3 p1 = Vector3.Lerp(control, end, t);
+        return Vector3.Lerp(p0, p1, t);
     }
 
     public void SpawnGoldCoin()
@@ -83,13 +96,19 @@ public class Enemy : MonoBehaviour
         SpawnGoldCoin();
         enemiesLeft--;
 
-        if (enemiesLeft <= 0)
+        if (enemiesLeft <= 0 && spawner != null)
         {
-            Spawner spawner = FindFirstObjectByType<Spawner>();
-            if (spawner != null)
-            {
-                spawner.StartNextWave(); // No arguments needed
-            }
+            spawner.StartNextWave();
+        }
+
+        UpdateEnemiesLeftUI();
+    }
+
+    private void UpdateEnemiesLeftUI()
+    {
+        if (enemiesLeftText != null)
+        {
+            enemiesLeftText.text = $"Enemies Left: {enemiesLeft}";
         }
     }
 }
