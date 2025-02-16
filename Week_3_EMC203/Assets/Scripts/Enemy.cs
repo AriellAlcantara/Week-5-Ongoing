@@ -13,6 +13,9 @@ public class Enemy : MonoBehaviour
     private float t = 0f;
     private Vector3 startPos;
 
+    // Track active enemies
+    public static int enemiesLeft = 0;
+
     void Start()
     {
         target = GameObject.Find("TargetPoint")?.transform;
@@ -77,6 +80,16 @@ public class Enemy : MonoBehaviour
 
     private void OnDestroy()
     {
-        SpawnGoldCoin(); // Spawn gold when the enemy is destroyed
+        SpawnGoldCoin();
+        enemiesLeft--;
+
+        if (enemiesLeft <= 0)
+        {
+            Spawner spawner = FindFirstObjectByType<Spawner>();
+            if (spawner != null)
+            {
+                spawner.StartNextWave(); // No arguments needed
+            }
+        }
     }
 }
